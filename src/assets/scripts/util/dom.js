@@ -60,13 +60,13 @@ function parseInput(data, input) {
 /**
  * Determines an event target based on a CSS selector.
  *
- * @method getEventTarget
+ * @method getTarget
  * @param {HTMLElement} element
  * @param {Event} event
  * @param {String} selector
  * @return {HTMLElement|null}
  */
-export function getEventTarget(element, event, selector) {
+export function getTarget(element, event, selector) {
 	var target = event.target.closest(selector);
 
 	if (target && element.contains(target)) {
@@ -79,16 +79,34 @@ export function getEventTarget(element, event, selector) {
 /**
  * A naive input serializer.
  *
- * @method getFormValues
+ * @method getValues
  * @param {HTMLElement} element
  * @return {Object}
  */
-export function getFormValues(element) {
+export function getValues(element) {
 	return reduce.call(
 		element.getElementsByTagName('input'),
 		parseInput,
 		{}
 	);
+}
+
+/**
+ * Convenience wrapper for registering a new DOM element.
+ *
+ * @method registerElement
+ * @param {String} tagName
+ * @param {HTMLElement} parent
+ * @param {Object} child
+ * @return {HTMLElement}
+ */
+export function registerElement(tagName, parent, child) {
+	return document.registerElement(tagName, {
+		prototype: Object.assign(
+			Object.create(parent.prototype),
+			child
+		)
+	});
 }
 
 /**
@@ -112,22 +130,4 @@ export function setInnerHTML(fromElement, toElement, options = {}) {
 	}
 
 	return morphdom(fromElement, toElement, options);
-}
-
-/**
- * Convenience wrapper for registering a new DOM element.
- *
- * @method registerElement
- * @param {String} tagName
- * @param {HTMLElement} parent
- * @param {Object} child
- * @return {HTMLElement}
- */
-export function registerElement(tagName, parent, child) {
-	return document.registerElement(tagName, {
-		prototype: Object.assign(
-			Object.create(parent.prototype),
-			child
-		)
-	});
 }

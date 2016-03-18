@@ -5,9 +5,9 @@
 import globby from 'globby';
 
 /**
- * @type {Function}
+ * @method find
  * @param {String|Array<String>} glob
- * @return {Promise<Array<String>>}
+ * @return {Promise<Object<String,Array<String>>>}
  */
 export async function find(glob) {
 	const srcFiles = await globby(glob);

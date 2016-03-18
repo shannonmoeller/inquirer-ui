@@ -7,7 +7,7 @@
  *     </inquirer-form>
  */
 
-import {getEventTarget, getFormValues, registerElement, setInnerHTML} from '../../scripts/util/dom';
+import {getTarget, getValues, registerElement, setInnerHTML} from '../../scripts/util/dom';
 import {FormService} from './services/form';
 import {FormState} from './states/form';
 import renderForm from './templates/form.html';
@@ -94,8 +94,6 @@ export default registerElement('inquirer-form', HTMLElement, {
 		const data = state.get();
 		const {answers, prompts, step} = data;
 
-		console.log(answers);
-
 		setInnerHTML(this, renderForm({
 			...state,
 
@@ -111,12 +109,12 @@ export default registerElement('inquirer-form', HTMLElement, {
 	 * @callback
 	 */
 	onNextClicked(event) {
-		if (!getEventTarget(this, event, 'button[inquirer-next]')) {
+		if (!getTarget(this, event, 'button[inquirer-next]')) {
 			return;
 		}
 
 		this.state
-			.setNext(getFormValues(this));
+			.setNext(getValues(this));
 	},
 
 	/**
@@ -125,7 +123,7 @@ export default registerElement('inquirer-form', HTMLElement, {
 	 * @callback
 	 */
 	onPrevClicked(event) {
-		if (!getEventTarget(this, event, 'button[inquirer-prev]')) {
+		if (!getTarget(this, event, 'button[inquirer-prev]')) {
 			return;
 		}
 
@@ -139,7 +137,7 @@ export default registerElement('inquirer-form', HTMLElement, {
 	 * @callback
 	 */
 	onGenerateClicked(event) {
-		if (!getEventTarget(this, event, 'button[inquirer-generate]')) {
+		if (!getTarget(this, event, 'button[inquirer-generate]')) {
 			return;
 		}
 

@@ -8,6 +8,8 @@
  */
 export const FormService = {
 	/**
+	 * Prompts are JSON plus functions so they are loaded as text and evaluated.
+	 *
 	 * @method getPrompts
 	 * @param {String} url
 	 * @return {Promise<Array<Object>>}
@@ -15,8 +17,7 @@ export const FormService = {
 	getPrompts: function (url) {
 		return fetch(url)
 			.then(res => res.text())
-			.then(eval) // eslint-disable-line no-eval
-
+			.then(eval); // eslint-disable-line no-eval
 	},
 
 	/**

@@ -3,7 +3,7 @@
  */
 
 /**
- * @type {Function}
+ * @method debounce
  * @param {Function} fn
  * @param {Number=} delay
  * @return {Function}

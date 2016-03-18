@@ -5,7 +5,7 @@
 /**
  * http://www.2ality.com/2015/01/template-strings-html.html
  *
- * @type {Function}
+ * @method htmlEscape
  * @param {String} str
  * @return {String}
  */
@@ -22,7 +22,7 @@ export function htmlEscape(str) {
 /**
  * http://www.2ality.com/2015/01/template-strings-html.html
  *
- * @type {Function}
+ * @method html
  * @param {Array<String>} listeralSections
  * @param {*} ...substs
  * @return {String}
