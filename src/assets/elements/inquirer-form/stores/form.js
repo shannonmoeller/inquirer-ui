@@ -3,8 +3,8 @@
  */
 
 import {
-	DEDUCE_UNDO,
-	DEDUCE_REDO,
+	STORE_UNDO,
+	STORE_REDO,
 	makeUndoable,
 	createReducer,
 	createStore
@@ -13,8 +13,8 @@ import {
 export const FORM_FETCH_SUCCESS = 'FORM_FETCH_SUCCESS';
 export const FORM_FETCH_ERROR = 'FORM_FETCH_ERROR';
 export const FORM_STEP_NEXT = 'FORM_STEP_NEXT';
-export const FORM_UNDO = DEDUCE_UNDO;
-export const FORM_REDO = DEDUCE_REDO;
+export const FORM_UNDO = STORE_UNDO;
+export const FORM_REDO = STORE_REDO;
 
 const initialState = {
 	answers: {},
@@ -54,7 +54,6 @@ const formActions = {
 export function createFormStore(state = initialState) {
 	const formReducer = createReducer(state, formActions);
 	const undoableFormReducer = makeUndoable(formReducer);
-	const store = createStore(undoableFormReducer);
 
-	return store;
+	return createStore(undoableFormReducer);
 }

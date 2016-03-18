@@ -1,9 +1,9 @@
 /**
- * # Deduce State Container
+ * # State Container
  */
 
-export const DEDUCE_UNDO = 'DEDUCE_UNDO';
-export const DEDUCE_REDO = 'DEDUCE_REDO';
+export const STORE_UNDO = 'STORE_UNDO';
+export const STORE_REDO = 'STORE_REDO';
 
 export function makeUndoable(reducer) {
 	const initialUndoState = {
@@ -20,14 +20,14 @@ export function makeUndoable(reducer) {
 		}
 
 		switch (action.type) {
-			case DEDUCE_UNDO:
+			case STORE_UNDO:
 				return {
 					present: past[past.length - 1],
 					past: past.slice(0, -1),
 					future: [present, ...future]
 				};
 
-			case DEDUCE_REDO:
+			case STORE_REDO:
 				return {
 					present: future[0],
 					past: [...past, present],
@@ -105,7 +105,6 @@ export function createStore(reducer, state) {
 		return action;
 	}
 
-	// Init
 	state = reducer(state, {});
 
 	return {

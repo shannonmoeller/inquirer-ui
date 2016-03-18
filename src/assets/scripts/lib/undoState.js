@@ -16,14 +16,12 @@ export class UndoState extends State {
 		super(data)
 
 		/**
-		 * @property past
-		 * @type {Array}
+		 * @property {Array} past
 		 */
 		this.past = [];
 
 		/**
-		 * @property future
-		 * @type {Array}
+		 * @property {Array} future
 		 */
 		this.future = [];
 	}

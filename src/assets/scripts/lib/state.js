@@ -11,20 +11,17 @@ export class State {
 	 */
 	constructor(data) {
 		/**
-		 * @property data
-		 * @type {*}
+		 * @property {*} data
 		 */
 		this.data = data;
 
 		/**
-		 * @property listeners
-		 * @type {Array<Function>}
+		 * @property {Array<Function>} listeners
 		 */
 		this.listeners = []
 
 		/**
-		 * @property isDispatching
-		 * @type {Boolean}
+		 * @property {Boolean} isDispatching
 		 */
 		this.isDispatching = false;
 	}
@@ -43,6 +40,8 @@ export class State {
 	 * @chainable
 	 */
 	set(data) {
+		console.trace('state change');
+
 		if (this.isDispatching) {
 			throw new Error('Dispatch in progress.');
 		}

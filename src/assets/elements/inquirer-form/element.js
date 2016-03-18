@@ -104,6 +104,22 @@ export default registerElement('inquirer-form', HTMLElement, {
 	},
 
 	/**
+	 * @method onGenerateClicked
+	 * @param {Event} event
+	 * @callback
+	 */
+	onGenerateClicked(event) {
+		if (!getTarget(this, event, 'button[inquirer-generate]')) {
+			return;
+		}
+
+		const {answers} = this.state.get();
+
+		FormService
+			.getZip(this.getAttribute('action'), answers);
+	},
+
+	/**
 	 * @method onNextClicked
 	 * @param {Event} event
 	 * @callback
@@ -129,21 +145,5 @@ export default registerElement('inquirer-form', HTMLElement, {
 
 		this.state
 			.undo();
-	},
-
-	/**
-	 * @method onGenerateClicked
-	 * @param {Event} event
-	 * @callback
-	 */
-	onGenerateClicked(event) {
-		if (!getTarget(this, event, 'button[inquirer-generate]')) {
-			return;
-		}
-
-		const {answers} = this.state.get();
-
-		FormService
-			.getZip(this.getAttribute('action'), answers);
 	}
 });
