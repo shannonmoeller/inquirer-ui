@@ -8,7 +8,7 @@
  */
 
 import {getTarget, getValues, registerElement, setInnerHTML} from '../../scripts/util/dom';
-import {createUndoStore} from '../../scripts/lib/undoStore';
+import {createUndoStore} from '../../scripts/lib/store';
 import * as formActions from './actions';
 import * as formService from './service';
 import renderForm from './templates/form.html';
@@ -44,10 +44,11 @@ export default registerElement('inquirer-form', HTMLElement, {
 
 	/**
 	 * @method attributeChangedCallback
+	 * @param {String} name
 	 * @callback
 	 */
 	attributeChangedCallback(name) {
-		if (name !== 'src') {
+		if (name === 'src') {
 			return;
 		}
 
@@ -119,10 +120,16 @@ export default registerElement('inquirer-form', HTMLElement, {
 			return;
 		}
 
-		const {answers} = this.store.getState();
+		const store = this.store;
 
-		formService
-			.getZip(this.getAttribute('action'), answers);
+		if (!store) {
+			return;
+		}
+
+		const url = this.getAttribute('action');
+		const {answers} = store.getState();
+
+		formService.getZip(url, answers);
 	},
 
 	/**
@@ -135,10 +142,15 @@ export default registerElement('inquirer-form', HTMLElement, {
 			return;
 		}
 
-		this.store
-			.next({
-				answers: getValues(this)
-			});
+		const store = this.store;
+
+		if (!store) {
+			return;
+		}
+
+		const answers = getValues(this);
+
+		store.next({answers});
 	},
 
 	/**
@@ -151,7 +163,12 @@ export default registerElement('inquirer-form', HTMLElement, {
 			return;
 		}
 
-		this.store
-			.undo();
+		const store = this.store;
+
+		if (!store) {
+			return;
+		}
+
+		store.undo();
 	}
 });

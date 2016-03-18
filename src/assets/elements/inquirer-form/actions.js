@@ -2,9 +2,13 @@
  * # Inquirer Form Actions
  */
 
+/**
+ * @method init
+ * @return {Object} Initial state.
+ */
 export function init() {
 	return {
-		answers: {},
+		answers: null,
 		error: null,
 		isLoading: true,
 		prompts: null,

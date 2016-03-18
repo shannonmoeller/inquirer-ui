@@ -22,5 +22,5 @@ export function getPrompts(url) {
  * @return {Promise<Object>}
  */
 export function getZip(url, params) {
-	console.log(url, params);
+	console.log('get zip', url, params);
 }
