@@ -1,5 +1,5 @@
 {
-  "name": "com-github-shannonmoeller-inquirer",
+  "name": "inquirer-ui",
   "version": "1.0.0",
   "description": "",
   "main": false,
@@ -13,14 +13,14 @@
     "posttest": "nyc report -r lcov",
     "watch": "chokidar '{src,test}/**/*.*' -c 'npm test'"
   },
-  "repository": "shannonmoeller/shannonmoeller.github.com",
+  "repository": "shannonmoeller/inquirer-ui",
   "keywords": [],
   "author": "Shannon Moeller <me@shannonmoeller.com> (http://shannonmoeller.com)",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/shannonmoeller/shannonmoeller.github.com/issues"
+    "url": "https://github.com/shannonmoeller/inquirer-ui/issues"
   },
-  "homepage": "http://shannonmoeller.github.com",
+  "homepage": "https://github.com/shannonmoeller/inquirer-ui",
   "dependencies": {
     "document-register-element": "^0.5.4",
     "dom-shims": "^0.1.4",
