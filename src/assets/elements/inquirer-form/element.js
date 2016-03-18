@@ -8,8 +8,9 @@
  */
 
 import {getTarget, getValues, registerElement, setInnerHTML} from '../../scripts/util/dom';
-import {FormService} from './services/form';
-import {FormState} from './states/form';
+import {createUndoStore} from '../../scripts/lib/undoStore';
+import * as formActions from './actions';
+import * as formService from './service';
 import renderForm from './templates/form.html';
 
 /**
@@ -60,16 +61,24 @@ export default registerElement('inquirer-form', HTMLElement, {
 	 * @callback
 	 */
 	create() {
-		const state = new FormState();
+		const initialState = {
+			answers: {},
+			error: null,
+			isLoading: true,
+			prompts: null,
+			step: 0
+		};
 
-		state.addListener(() => this.render());
+		const store = createUndoStore(initialState, formActions);
 
-		FormService
+		store.addListener(() => this.render());
+
+		formService
 			.getPrompts(this.getAttribute('src'))
-			.then(prompts => state.setPrompts(prompts))
-			.catch(err => state.setError(err));
+			.then(prompts => store.fetchSuccess({prompts}))
+			.catch(error => store.fetchError({error}));
 
-		this.state = state;
+		this.store = store;
 	},
 
 	/**
@@ -77,7 +86,7 @@ export default registerElement('inquirer-form', HTMLElement, {
 	 * @callback
 	 */
 	destroy() {
-		this.state = null;
+		this.store = null;
 	},
 
 	/**
@@ -85,21 +94,23 @@ export default registerElement('inquirer-form', HTMLElement, {
 	 * @callback
 	 */
 	render() {
-		const state = this.state;
+		const store = this.store;
 
-		if (!state) {
+		if (!store) {
 			return;
 		}
 
-		const data = state.get();
-		const {answers, prompts, step} = data;
+		const {past, present, future} = store.getState();
+		const {answers, prompts, step} = present;
+
+		console.log(answers);
 
 		setInnerHTML(this, renderForm({
-			...state,
+			...present,
 
 			prompts: prompts.slice(0, step + 1),
-			hasPrevious: state.past.length > 1,
-			hasNext: true
+			hasPrevious: past.length > 1,
+			hasNext: future.length > 0
 		}));
 	},
 
@@ -113,9 +124,9 @@ export default registerElement('inquirer-form', HTMLElement, {
 			return;
 		}
 
-		const {answers} = this.state.get();
+		const {answers} = this.store.getState();
 
-		FormService
+		formService
 			.getZip(this.getAttribute('action'), answers);
 	},
 
@@ -129,8 +140,10 @@ export default registerElement('inquirer-form', HTMLElement, {
 			return;
 		}
 
-		this.state
-			.setNext(getValues(this));
+		this.store
+			.next({
+				answers: getValues(this)
+			});
 	},
 
 	/**
@@ -143,7 +156,7 @@ export default registerElement('inquirer-form', HTMLElement, {
 			return;
 		}
 
-		this.state
+		this.store
 			.undo();
 	}
 });

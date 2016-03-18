@@ -1,60 +1,9 @@
 /**
- * # State Container
+ * # Store
  */
 
-export const STORE_UNDO = 'STORE_UNDO';
-export const STORE_REDO = 'STORE_REDO';
-
-export function makeUndoable(reducer) {
-	const initialUndoState = {
-		present: reducer(undefined, {}),
-		past: [],
-		future: []
-	};
-
-	return function undoableReducer(state = initialUndoState, action) {
-		const {past, present, future} = state;
-
-		if (!action || !action.type) {
-			return state;
-		}
-
-		switch (action.type) {
-			case STORE_UNDO:
-				return {
-					present: past[past.length - 1],
-					past: past.slice(0, -1),
-					future: [present, ...future]
-				};
-
-			case STORE_REDO:
-				return {
-					present: future[0],
-					past: [...past, present],
-					future: future.slice(1)
-				};
-
-			default:
-				return {
-					present: reducer(present, action),
-					past: [...past, present],
-					future: []
-				};
-		}
-	};
-}
-
-export function createReducer(initialState, actions) {
-	return function reducer(state = initialState, action) {
-		if (!action || !action.type) {
-			return state;
-		}
-
-		return actions[action.type](state, action);
-	};
-}
-
-export function createStore(reducer, state) {
+export function createStore(state, reducers) {
+	const store = {};
 	const handlers = [];
 	let isDispatching = false;
 
@@ -62,9 +11,9 @@ export function createStore(reducer, state) {
 		return state;
 	}
 
-	function subscribe(handler) {
+	function addListener(handler) {
 		if (typeof handler !== 'function') {
-			throw new Error('Invalid handler.');
+			throw new Error('The handler must be a function.');
 		}
 
 		if (handlers.indexOf(handler) === -1) {
@@ -80,36 +29,37 @@ export function createStore(reducer, state) {
 		};
 	}
 
-	function dispatch(action) {
-		if (!action) {
-			throw new Error('Invalid action.');
-		}
-
-		if (!action.type) {
-			throw new Error('Invalid action type.');
-		}
-
+	function dispatch(reducer, data) {
 		if (isDispatching) {
 			throw new Error('Dispatch in progress.');
 		}
 
-		if (!action || !action.type) {
-			return action;
-		}
-
 		isDispatching = true;
-		state = reducer(state, action);
+		state = reducer(state, data);
 		handlers.slice().forEach(h => h());
 		isDispatching = false;
-
-		return action;
 	}
 
-	state = reducer(state, {});
+	function makeDispatcher(name) {
+		const reducer = reducers[name];
+
+		if (typeof reducer !== 'function') {
+			throw new Error('The reducer must be a function.');
+		}
+
+		store[name] = function (data) {
+			dispatch(reducer, data);
+
+			return this;
+		};
+	}
+
+	Object.keys(reducers).forEach(makeDispatcher);
 
 	return {
 		getState,
-		subscribe,
-		dispatch
+		addListener,
+
+		...store
 	};
 }
