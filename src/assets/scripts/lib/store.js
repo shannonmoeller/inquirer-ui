@@ -2,7 +2,7 @@
  * # Store
  */
 
-export function createStore(state, reducers) {
+export function createStore(state, actions) {
 	const store = {};
 	const handlers = [];
 	let isDispatching = false;
@@ -29,32 +29,32 @@ export function createStore(state, reducers) {
 		};
 	}
 
-	function dispatch(reducer, data) {
+	function dispatch(action, data) {
 		if (isDispatching) {
 			throw new Error('Dispatch in progress.');
 		}
 
 		isDispatching = true;
-		state = reducer(state, data);
+		state = action(state, data);
 		handlers.slice().forEach(h => h());
 		isDispatching = false;
 	}
 
 	function makeDispatcher(name) {
-		const reducer = reducers[name];
+		const action = actions[name];
 
-		if (typeof reducer !== 'function') {
-			throw new Error('The reducer must be a function.');
+		if (typeof action !== 'function') {
+			throw new Error('The action must be a function.');
 		}
 
 		store[name] = function (data) {
-			dispatch(reducer, data);
+			dispatch(action, data);
 
 			return this;
 		};
 	}
 
-	Object.keys(reducers).forEach(makeDispatcher);
+	Object.keys(actions).forEach(makeDispatcher);
 
 	return {
 		getState,

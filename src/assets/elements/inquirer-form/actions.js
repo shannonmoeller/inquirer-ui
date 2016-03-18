@@ -2,6 +2,16 @@
  * # Inquirer Form Actions
  */
 
+export function init() {
+	return {
+		answers: {},
+		error: null,
+		isLoading: true,
+		prompts: null,
+		step: 0
+	};
+}
+
 /**
  * @method fetchSuccess
  * @param {Object} state

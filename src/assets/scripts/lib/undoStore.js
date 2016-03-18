@@ -4,8 +4,8 @@
 
 import {createStore} from './store';
 
-export function createUndoStore(state, reducers) {
-	const undoableReducers = {};
+export function createUndoStore(state, actions) {
+	const undoableActions = {};
 	const undoableState = {
 		present: state,
 		past: [],
@@ -32,14 +32,14 @@ export function createUndoStore(state, reducers) {
 		};
 	}
 
-	function makeReducer(name) {
-		const reducer = reducers[name];
+	function makeAction(name) {
+		const reducer = actions[name];
 
 		if (typeof reducer !== 'function') {
 			throw new Error('The reducer must be a function.');
 		}
 
-		undoableReducers[name] = (state, data) => {
+		undoableActions[name] = (state, data) => {
 			const {past, present} = state;
 
 			return {
@@ -50,12 +50,12 @@ export function createUndoStore(state, reducers) {
 		};
 	}
 
-	Object.keys(reducers).forEach(makeReducer);
+	Object.keys(actions).forEach(makeAction);
 
 	return createStore(undoableState, {
 		undo,
 		redo,
 
-		...undoableReducers
+		...undoableActions
 	});
 }

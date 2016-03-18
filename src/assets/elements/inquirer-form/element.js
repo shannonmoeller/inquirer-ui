@@ -61,15 +61,10 @@ export default registerElement('inquirer-form', HTMLElement, {
 	 * @callback
 	 */
 	create() {
-		const initialState = {
-			answers: {},
-			error: null,
-			isLoading: true,
-			prompts: null,
-			step: 0
-		};
-
-		const store = createUndoStore(initialState, formActions);
+		const store = createUndoStore(
+			formActions.init(),
+			formActions
+		);
 
 		store.addListener(() => this.render());
 
@@ -101,16 +96,16 @@ export default registerElement('inquirer-form', HTMLElement, {
 		}
 
 		const {past, present, future} = store.getState();
-		const {answers, prompts, step} = present;
+		const {prompts, step} = present;
 
-		console.log(answers);
+		console.log(present, past, future);
 
 		setInnerHTML(this, renderForm({
 			...present,
 
 			prompts: prompts.slice(0, step + 1),
 			hasPrevious: past.length > 1,
-			hasNext: future.length > 0
+			hasNext: true
 		}));
 	},
 
@@ -120,7 +115,7 @@ export default registerElement('inquirer-form', HTMLElement, {
 	 * @callback
 	 */
 	onGenerateClicked(event) {
-		if (!getTarget(this, event, 'button[inquirer-generate]')) {
+		if (!getTarget(this, event, '[inquirer-generate]')) {
 			return;
 		}
 
@@ -136,7 +131,7 @@ export default registerElement('inquirer-form', HTMLElement, {
 	 * @callback
 	 */
 	onNextClicked(event) {
-		if (!getTarget(this, event, 'button[inquirer-next]')) {
+		if (!getTarget(this, event, '[inquirer-next]')) {
 			return;
 		}
 
@@ -152,7 +147,7 @@ export default registerElement('inquirer-form', HTMLElement, {
 	 * @callback
 	 */
 	onPrevClicked(event) {
-		if (!getTarget(this, event, 'button[inquirer-prev]')) {
+		if (!getTarget(this, event, '[inquirer-prev]')) {
 			return;
 		}
 
