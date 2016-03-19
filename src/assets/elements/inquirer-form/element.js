@@ -23,11 +23,11 @@ export default registerElement('inquirer-form', HTMLElement, {
 	 * @callback
 	 */
 	attachedCallback() {
+		this.create();
+
+		this.addEventListener('click', this.onGenerateClicked, this);
 		this.addEventListener('click', this.onNextClicked, this);
 		this.addEventListener('click', this.onPrevClicked, this);
-		this.addEventListener('click', this.onGenerateClicked, this);
-
-		this.create();
 	},
 
 	/**
@@ -35,11 +35,9 @@ export default registerElement('inquirer-form', HTMLElement, {
 	 * @callback
 	 */
 	detachedCallback() {
+		this.removeEventListener('click', this.onGenerateClicked, this);
 		this.removeEventListener('click', this.onNextClicked, this);
 		this.removeEventListener('click', this.onPrevClicked, this);
-		this.removeEventListener('click', this.onGenerateClicked, this);
-
-		this.destroy();
 	},
 
 	/**
@@ -48,13 +46,11 @@ export default registerElement('inquirer-form', HTMLElement, {
 	 * @callback
 	 */
 	attributeChangedCallback(name) {
-		if (name === 'src') {
+		if (name !== 'src') {
 			return;
 		}
 
-		this
-			.destroy()
-			.create();
+		this.create();
 	},
 
 	/**
@@ -78,25 +74,11 @@ export default registerElement('inquirer-form', HTMLElement, {
 	},
 
 	/**
-	 * @method destroy
-	 * @callback
-	 */
-	destroy() {
-		this.store = null;
-	},
-
-	/**
 	 * @method render
 	 * @callback
 	 */
 	render() {
-		const store = this.store;
-
-		if (!store) {
-			return;
-		}
-
-		const {past, present, future} = store.getState();
+		const {past, present, future} = this.store.getState();
 		const {prompts, step} = present;
 
 		console.log(present, past, future);
@@ -116,18 +98,12 @@ export default registerElement('inquirer-form', HTMLElement, {
 	 * @callback
 	 */
 	onGenerateClicked(event) {
-		if (!getTarget(this, event, '[inquirer-generate]')) {
-			return;
-		}
-
-		const store = this.store;
-
-		if (!store) {
+		if (getTarget(this, event, '[inquirer-generate]')) {
 			return;
 		}
 
 		const url = this.getAttribute('action');
-		const {answers} = store.getState();
+		const {answers} = this.store.getState();
 
 		formService.getZip(url, answers);
 	},
@@ -142,15 +118,10 @@ export default registerElement('inquirer-form', HTMLElement, {
 			return;
 		}
 
-		const store = this.store;
-
-		if (!store) {
-			return;
-		}
-
 		const answers = getValues(this);
 
-		store.next({answers});
+		this.store
+			.next({answers});
 	},
 
 	/**
@@ -163,12 +134,7 @@ export default registerElement('inquirer-form', HTMLElement, {
 			return;
 		}
 
-		const store = this.store;
-
-		if (!store) {
-			return;
-		}
-
-		store.undo();
+		this.store
+			.undo();
 	}
 });
