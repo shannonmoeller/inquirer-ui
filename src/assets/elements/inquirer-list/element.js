@@ -5,7 +5,7 @@
  *     </inquirer-list>
  */
 
-import {registerElement} from '../../scripts/util/dom';
+import { registerElement } from '../../scripts/util/dom';
 
 /**
  * @class InquirerListElement

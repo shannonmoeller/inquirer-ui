@@ -1,0 +1,374 @@
+[
+    {
+        "type": "input",
+        "name": "title",
+        "label": "Name",
+        "message": "What is the name of your project?",
+        "default": function () {
+            if (typeof path !== 'object') {
+                return 'CLIENT.Project';
+            }
+
+            return path.basename(process.cwd());
+        }
+    },
+    {
+        "type": "input",
+        "name": "name",
+        "label": "Slug",
+        "message": "What would you like the slug to be?",
+        "default": function (answers) {
+            var title = answers.title || 'client-project';
+
+            return title
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^\-+|\-+$/g, '');
+        },
+        "validate": function (answer) {
+            var isValid = Boolean(answer && answer.match(/^[\w-]+$/));
+
+            return isValid || 'Slugs may only contain letters, numbers, hyphens, and underscores.';
+        }
+    },
+    {
+        "type": "list",
+        "name": "markup",
+        "label": "Markup",
+        "message": "Which markup build system?",
+        "choices": [
+            {
+                "name": "None",
+                "value": "MarkupVanilla"
+            },
+            {
+                "name": "Includes",
+                "value": "MarkupIncludes",
+                "meta": {
+                    "requiresBuild": true,
+                    "tip": "Basic method for including one html file inside another, add a line like this to your markup: include \"templates/header.html\""
+                }
+            },
+            {
+                "name": "Grunt Handlebars",
+                "value": "MarkupHandlebars",
+                "meta": {
+                    "requiresBuild": true,
+                    "tip": "Powerful templating using Handlebars. Can pass in variables, inherit templates, etc."
+                }
+            }
+        ],
+        "default": "MarkupVanilla"
+    },
+    {
+        "type": "checkbox",
+        "name": "markupFeatures",
+        "label": "Features",
+        "message": "What markup features would you like?",
+        "choices": [
+            {
+                "name": "Icons",
+                "value": "icons",
+                "meta": {
+                    "tip": "Favicons & apple touch icons"
+                }
+            },
+            {
+                "name": "SEO Meta Data",
+                "value": "seo"
+            },
+            {
+                "name": "XHTML Strict Doctype (legacy)",
+                "value": "xhtml"
+            },
+            {
+                "name": "Grunt Imagemin",
+                "value": "optimize",
+                "meta": {
+                    "tip": "Automatically compress all PNG assets. Run as `grunt optimize`"
+                }
+            }
+        ],
+        "when": function (answers) {
+            return answers.markup === 'MarkupHandlebars';
+        }
+    },
+    {
+        "type": "checkbox",
+        "name": "markupFeatures",
+        "label": "Features",
+        "message": "What markup features would you like?",
+        "choices": [
+            {
+                "name": "Icons",
+                "value": "icons",
+                "meta": {
+                    "tip": "Favicons & apple touch icons"
+                }
+            },
+            {
+                "name": "SEO Meta Data",
+                "value": "seo"
+            },
+            {
+                "name": "XHTML Strict Doctype (legacy)",
+                "value": "xhtml"
+            },
+            {
+                "name": "Grunt Imagemin",
+                "value": "optimize",
+                "meta": {
+                    "tip": "Automatically compress all PNG assets. Run as `grunt optimize`"
+                }
+            }
+        ],
+        "when": function (answers) {
+            return answers.markup === 'MarkupIncludes';
+        }
+    },
+    {
+        "type": "checkbox",
+        "name": "markupFeatures",
+        "label": "Features",
+        "message": "What markup features would you like?",
+        "choices": [
+            {
+                "name": "Icons",
+                "value": "icons",
+                "meta": {
+                    "tip": "Favicons & apple touch icons"
+                }
+            },
+            {
+                "name": "SEO Meta Data",
+                "value": "seo"
+            },
+            {
+                "name": "XHTML Strict Doctype (legacy)",
+                "value": "xhtml"
+            },
+            {
+                "name": "Grunt Imagemin",
+                "value": "optimize",
+                "meta": {
+                    "tip": "Automatically compress all PNG assets. Run as `grunt optimize`"
+                }
+            }
+        ],
+        "when": function (answers) {
+            return answers.markup === 'MarkupVanilla';
+        }
+    },
+    {
+        "type": "list",
+        "name": "styles",
+        "label": "Styles",
+        "message": "Which styles build system?",
+        "choices": [
+            {
+                "name": "None",
+                "value": "StylesVanilla"
+            },
+            {
+                "name": "Sass",
+                "value": "StylesSass",
+                "meta": {
+                    "requiresBuild": true,
+                    "tip": "Use the Sass preprocesser to compile scss files to css."
+                }
+            }
+        ],
+        "default": "StylesVanilla"
+    },
+    {
+        "type": "checkbox",
+        "name": "stylesFeatures",
+        "label": "Features",
+        "message": "Any additional stylesheets?",
+        "choices": [
+            {
+                "name": "Print",
+                "value": "print"
+            }
+        ],
+        "when": function (answers) {
+            return answers.styles === 'StylesSass';
+        }
+    },
+    {
+        "type": "checkbox",
+        "name": "stylesFeatures",
+        "label": "Features",
+        "message": "Any additional stylesheets?",
+        "choices": [
+            {
+                "name": "Print",
+                "value": "print"
+            },
+            {
+                "name": "IE7 Conditional",
+                "value": "ie7Conditional"
+            },
+            {
+                "name": "IE8 Conditional",
+                "value": "ie8Conditional"
+            },
+            {
+                "name": "IE9 Conditional",
+                "value": "ie9Conditional"
+            }
+        ],
+        "when": function (answers) {
+            return answers.styles === 'StylesVanilla';
+        }
+    },
+    {
+        "type": "list",
+        "name": "scripts",
+        "label": "Scripts",
+        "message": "Which scripts build system?",
+        "choices": [
+            {
+                "name": "None",
+                "value": "ScriptsVanilla",
+                "meta": {
+                    "tip": "Load your JS modules the old fashioned way with &lt;script&gt; tags"
+                }
+            },
+            {
+                "name": "RequireJS",
+                "value": "ScriptsRequireJs",
+                "meta": {
+                    "tip": "Load your JS modules via require() calls"
+                }
+            }
+        ],
+        "default": "ScriptsVanilla"
+    },
+    {
+        "type": "checkbox",
+        "name": "scriptsFeatures",
+        "label": "Features",
+        "message": "Any additional scripting features?",
+        "choices": [
+            {
+                "name": "JavaScript Unit Testing",
+                "value": "unitTest",
+                "meta": {
+                    "tip": "Include the Jasmine unit testing framework. Run as `grunt test`"
+                }
+            },
+            {
+                "name": "3rd-Party Vulnerability Audit",
+                "value": "audit",
+                "meta": {
+                    "tip": "Scan 3rd-party libraries for outdated versions and known issues. Run as `grunt audit`"
+                }
+            }
+        ],
+        "when": function (answers) {
+            return answers.scripts === 'ScriptsRequireJs';
+        }
+    },
+    {
+        "type": "input",
+        "name": "scriptsNamespace",
+        "label": "Namespace",
+        "message": "What global variable name would you like?",
+        "default": "NRD",
+        "when": function (answers) {
+            return answers.scripts === 'ScriptsVanilla';
+        }
+    },
+    {
+        "type": "checkbox",
+        "name": "scriptsFeatures",
+        "label": "Features",
+        "message": "Any additional scripting features?",
+        "choices": [
+            {
+                "name": "JavaScript Unit Testing",
+                "value": "unitTest",
+                "meta": {
+                    "tip": "Include the Jasmine unit testing framework. Run as `grunt test`"
+                }
+            },
+            {
+                "name": "3rd-party Vulnerability Audit",
+                "value": "audit",
+                "meta": {
+                    "tip": "Scan 3rd-party libraries for outdated versions and known issues. Run as `grunt audit`"
+                }
+            }
+        ],
+        "when": function (answers) {
+            return answers.scripts === 'ScriptsVanilla';
+        }
+    },
+    {
+        "type": "checkbox",
+        "name": "frameworkFeatures",
+        "label": "Features",
+        "message": "Any additional scripts?",
+        "choices": [
+            {
+                "name": "Demo Application",
+                "value": "demo",
+                "meta": {
+                    "tip": "Outputs a basic client-side application as a starting point"
+                }
+            },
+            {
+                "name": "jQuery",
+                "value": "jQuery",
+                "meta": {
+                    "tip": "jQuery 1x by default; update the version number in bower.json as desired"
+                }
+            },
+            {
+                "name": "Modernizr",
+                "value": "modernizr"
+            },
+            {
+                "name": "Auto Replace",
+                "value": "autoReplace",
+                "meta": {
+                    "tip": "Mimics HTML5 placeholder behavior in browsers that do not support it"
+                }
+            },
+            {
+                "name": "External Links",
+                "value": "externalLinks",
+                "meta": {
+                    "tip": "Launches links with a rel=\"external\" in a new window."
+                }
+            },
+            {
+                "name": "Function Name",
+                "value": "functionName",
+                "meta": {
+                    "tip": "Polyfill for browsers that do not support native Function.prototype.name."
+                }
+            },
+            {
+                "name": "Has JS",
+                "value": "hasJs",
+                "meta": {
+                    "tip": "Replaces \"no-js\" class with \"js\" on the html element if JavaScript is present"
+                }
+            },
+            {
+                "name": "Request Animation Frame",
+                "value": "requestAnimationFrame",
+                "meta": {
+                    "tip": "Mimics HTML5 requestAnimationFrame behavior in browsers that do not support it"
+                }
+            }
+        ],
+        "when": function (answers) {
+            // TODO: uncomment when there's more than one framework
+            // return answers.framework === 'FrameworkVanilla';
+            return true;
+        }
+    }
+]

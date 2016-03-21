@@ -6,8 +6,7 @@
  * ## Polyfills
  */
 
-import 'es5-shim';
-import 'es6-shim';
+import 'babel-polyfill';
 import 'dom-shims';
 import 'document-register-element';
 import 'whatwg-fetch';

@@ -7,8 +7,9 @@
  *     </inquirer-form>
  */
 
-import {getTarget, getValues, registerElement, setInnerHTML} from '../../scripts/util/dom';
-import {createUndoStore} from '../../scripts/lib/store';
+import { getTarget, getValues, registerElement, setInnerHTML } from '../../scripts/util/dom';
+import { createUndoStore } from '../../scripts/lib/store';
+import { resolvePrompts } from './helpers';
 import * as formActions from './actions';
 import * as formService from './service';
 import renderForm from './templates/form.html';
@@ -25,6 +26,7 @@ export default registerElement('inquirer-form', HTMLElement, {
 	attachedCallback() {
 		this.create();
 
+		this.addEventListener('keyup', this.onKeyReleased, this);
 		this.addEventListener('click', this.onGenerateClicked, this);
 		this.addEventListener('click', this.onNextClicked, this);
 		this.addEventListener('click', this.onPrevClicked, this);
@@ -35,6 +37,7 @@ export default registerElement('inquirer-form', HTMLElement, {
 	 * @callback
 	 */
 	detachedCallback() {
+		this.removeEventListener('keyup', this.onKeyReleased, this);
 		this.removeEventListener('click', this.onGenerateClicked, this);
 		this.removeEventListener('click', this.onNextClicked, this);
 		this.removeEventListener('click', this.onPrevClicked, this);
@@ -58,17 +61,17 @@ export default registerElement('inquirer-form', HTMLElement, {
 	 * @callback
 	 */
 	create() {
-		const store = createUndoStore(
-			formActions.init(),
-			formActions
-		);
+		const url = this.getAttribute('src');
+		const store = createUndoStore(formActions.init(), formActions);
 
 		store.addListener(() => this.render());
 
 		formService
-			.getPrompts(this.getAttribute('src'))
-			.then(prompts => store.fetchSuccess({prompts}))
-			.catch(error => store.fetchError({error}));
+			.getPrompts(url)
+			.then(
+				prompts => store.fetchSuccess({ prompts }),
+				error => store.fetchError({ error })
+			);
 
 		this.store = store;
 	},
@@ -77,19 +80,30 @@ export default registerElement('inquirer-form', HTMLElement, {
 	 * @method render
 	 * @callback
 	 */
-	render() {
-		const {past, present, future} = this.store.getState();
-		const {prompts, step} = present;
+	async render() {
+		const { past, present } = this.store.getState();
+		const { prompts, step } = present;
+		const answers = getValues(this);
+		const resolvedPrompts = await resolvePrompts(prompts, answers, step);
 
-		console.log(present, past, future);
+		console.log('render', resolvedPrompts);
 
 		setInnerHTML(this, renderForm({
 			...present,
 
-			prompts: prompts.slice(0, step + 1),
+			prompts: resolvedPrompts,
 			hasPrevious: past.length > 1,
 			hasNext: true
 		}));
+	},
+
+	/**
+	 * @method onKeyReleased
+	 * @param {Event} event
+	 * @callback
+	 */
+	onKeyReleased(event) {
+		console.log(event);
 	},
 
 	/**
@@ -98,12 +112,12 @@ export default registerElement('inquirer-form', HTMLElement, {
 	 * @callback
 	 */
 	onGenerateClicked(event) {
-		if (getTarget(this, event, '[inquirer-generate]')) {
+		if (!getTarget(this, event, '[inquirer-generate]')) {
 			return;
 		}
 
 		const url = this.getAttribute('action');
-		const {answers} = this.store.getState();
+		const { answers } = this.store.getState();
 
 		formService.getZip(url, answers);
 	},
@@ -118,10 +132,8 @@ export default registerElement('inquirer-form', HTMLElement, {
 			return;
 		}
 
-		const answers = getValues(this);
-
 		this.store
-			.next({answers});
+			.next({ answers: getValues(this) });
 	},
 
 	/**

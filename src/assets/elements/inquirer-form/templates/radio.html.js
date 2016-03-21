@@ -2,18 +2,18 @@
  * # Inquirer Radio-List Template
  */
 
-import {html} from '../../../scripts/util/template';
+import { html } from '../../../scripts/util/template';
 import renderLegend from './legend.html';
 import renderMeta from './meta.html';
 
-export default data => html`
+export default prompt => html`
 	<inquirer-list>
-		<fieldset>
-			${renderLegend(data)}
-			${data.choices.map(choice => html`
+		<fieldset ${prompt.disabled && 'disabled'}>
+			${renderLegend(prompt)}
+			${prompt.choices.map(choice => html`
 				<label>
 					<input type="radio"
-						name="${data.name}"
+						name="${prompt.name}"
 						value="${choice.value}"
 						${choice.checked && 'checked'}
 						${choice.disabled && 'disabled'} />

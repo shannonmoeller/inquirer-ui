@@ -2,18 +2,19 @@
  * # Inquirer Input Template
  */
 
-import {html} from '../../../scripts/util/template';
+import { html } from '../../../scripts/util/template';
 import renderLegend from './legend.html';
 
-export default data => html`
+export default prompt => html`
 	<inquirer-input>
-		<fieldset>
-			${renderLegend(data)}
+		<fieldset ${prompt.disabled && 'disabled'}>
+			${renderLegend(prompt)}
 			<label>
 				<input type="text"
-					name="${data.name}"
-					value="${data.answer}"
-					placeholder="${data.default}" />
+					name="${prompt.name}"
+					value="${prompt.answer}"
+					placeholder="${prompt.default}"
+					${prompt.disabled && 'disabled'} />
 			</label>
 		</fieldset>
 	</inquirer-input>

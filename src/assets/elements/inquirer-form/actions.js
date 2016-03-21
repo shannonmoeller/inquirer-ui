@@ -8,10 +8,10 @@
  */
 export function init() {
 	return {
-		answers: null,
-		error: null,
 		isLoading: true,
-		prompts: null,
+		prompts: [],
+		answers: {},
+		error: null,
 		step: 0
 	};
 }
@@ -20,16 +20,16 @@ export function init() {
  * @method fetchSuccess
  * @param {Object} state
  * @param {Object} data
- * @param {Object} data.prompts
+ * @param {Array<Object>} data.prompts
  * @return {Object} New state.
  */
-export function fetchSuccess(state, {prompts}) {
+export function fetchSuccess(state, { prompts }) {
 	return {
 		...state,
 
 		isLoading: false,
 		prompts: prompts,
-		step: 0
+		step: 1
 	};
 }
 
@@ -40,7 +40,7 @@ export function fetchSuccess(state, {prompts}) {
  * @param {Object} data.error
  * @return {Object} New state.
  */
-export function fetchError(state, {error}) {
+export function fetchError(state, { error }) {
 	return {
 		...state,
 
@@ -56,7 +56,7 @@ export function fetchError(state, {error}) {
  * @param {Object} data.answers
  * @return {Object} New state.
  */
-export function next(state, {answers}) {
+export function next(state, { answers }) {
 	return {
 		...state,
 

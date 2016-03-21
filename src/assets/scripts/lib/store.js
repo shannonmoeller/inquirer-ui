@@ -25,6 +25,8 @@ export function createStore(state, actions) {
 		if (handlers.indexOf(handler) === -1) {
 			handlers.push(handler);
 		}
+
+		return store;
 	}
 
 	function removeListener(handler) {
@@ -33,6 +35,8 @@ export function createStore(state, actions) {
 		if (index !== -1) {
 			handlers.splice(index, 1);
 		}
+
+		return store;
 	}
 
 	function dispatch(action, data) {
@@ -56,17 +60,12 @@ export function createStore(state, actions) {
 		store[name] = function (data) {
 			dispatch(action, data);
 
-			return this;
+			return store;
 		};
 	}
 
 	Object.keys(actions).forEach(makeDispatcher);
-
-	Object.assign(store, {
-		getState,
-		addListener,
-		removeListener
-	});
+	Object.assign(store, { getState, addListener, removeListener });
 
 	return store;
 }
@@ -86,7 +85,7 @@ export function createUndoStore(state, actions) {
 	};
 
 	function undo(state) {
-		const {past, present, future} = state;
+		const { past, present, future } = state;
 
 		return {
 			present: past[past.length - 1],
@@ -96,7 +95,7 @@ export function createUndoStore(state, actions) {
 	}
 
 	function redo(state) {
-		const {past, present, future} = state;
+		const { past, present, future } = state;
 
 		return {
 			present: future[0],
@@ -106,17 +105,17 @@ export function createUndoStore(state, actions) {
 	}
 
 	function makeAction(name) {
-		const reducer = actions[name];
+		const action = actions[name];
 
-		if (typeof reducer !== 'function') {
-			throw new Error('The reducer must be a function.');
+		if (typeof action !== 'function') {
+			throw new Error('The action must be a function.');
 		}
 
 		undoableActions[name] = (state, data) => {
-			const {past, present} = state;
+			const { past, present } = state;
 
 			return {
-				present: reducer(present, data),
+				present: action(present, data),
 				past: [...past, present],
 				future: []
 			};
@@ -124,11 +123,7 @@ export function createUndoStore(state, actions) {
 	}
 
 	Object.keys(actions).forEach(makeAction);
-
-	Object.assign(undoableActions, {
-		undo,
-		redo
-	});
+	Object.assign(undoableActions, { undo, redo });
 
 	return createStore(undoableState, undoableActions);
 }

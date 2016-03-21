@@ -2,10 +2,10 @@
  * # Inquirer Form Template
  */
 
-import {html} from '../../../scripts/util/template';
+import { html } from '../../../scripts/util/template';
 import renderInput from './input.html';
-import renderListCheckbox from './list-checkbox.html';
-import renderListRadio from './list-radio.html';
+import renderListCheckbox from './checkbox.html';
+import renderListRadio from './radio.html';
 
 const typeTemplates = {
 	checkbox: renderListCheckbox,
@@ -19,8 +19,8 @@ const typeTemplates = {
 };
 
 export default data => html`
-	${data.prompts && data.prompts.map(prompt =>
-		typeTemplates[prompt.type](prompt, data.answers)
+	${data.prompts && data.prompts.map((prompt, i, prompts) =>
+		typeTemplates[prompt.type](prompt, i, prompts)
 	)}
 
 	${data.hasNext && html`

@@ -2,14 +2,14 @@
  * # Inquirer Metadata Template
  */
 
-import {html} from '../../../scripts/util/template';
+import { html } from '../../../scripts/util/template';
 
 export default data => html`
-	${null && data.meta && html`
+	${data.meta && html`
 		<small>
 			<ul>
-				${data.meta.map(item => html`
-					<li>${item}</li>
+				${Object.keys(data.meta).map(key => html`
+					<li>${data.meta[key] === true ? 'Requires build step.' : data.meta[key]}</li>
 				`)}
 			</ul>
 		</small>
