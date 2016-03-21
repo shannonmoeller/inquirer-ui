@@ -5,80 +5,90 @@
 import { runAsync } from '../../scripts/util/function';
 
 /**
+ * Ensures that a choice is an object and has an index.
+ *
  * @method normalizeChoice
  * @param {Object|String} choice
+ * @param {Number} index
  * @return {Object}
  */
-function normalizeChoice(choice) {
+export function normalizeChoice(choice, index) {
 	if (typeof choice === 'string') {
 		return {
 			name: choice,
-			value: choice
+			value: choice,
+			index
 		};
 	}
 
-	return choice;
-}
-
-/**
- * @method resolveChoice
- * @param {Object|String} choice
- * @param {Number} index
- * @param {String|Number|Array<String|Number>} currentValue
- * @param {Object} answers
- * @return {Promise<Object>}
- */
-export async function resolveChoice(choice, index, currentValue, answers) {
-	const localChoice = normalizeChoice(choice);
-
-	const name = localChoice.name || localChoice.value;
-	const value = localChoice.value == null ? localChoice.value : localChoice.name;
-
-	const checkedList = [].concat(currentValue);
-	const disabled = await runAsync(localChoice.disabled, answers);
-
 	return {
-		...localChoice,
-
-		name,
-		value,
-		short: localChoice.short || name || value,
-		checked: checkedList.includes(index) || checkedList.includes(value),
-		disabled
+		...choice,
+		index
 	};
 }
 
 /**
+ * Derives the final properties of a prompt list choice.
+ *
+ * @method resolveChoice
+ * @param {Object} choice
+ * @param {Array<String|Number>} checkedList
+ * @param {Object} answers
+ * @return {Promise<Object>}
+ */
+export async function resolveChoice(choice, checkedList, answers) {
+	const { index } = choice;
+	const name = choice.name || choice.value;
+	const value = choice.value != null ? choice.value : choice.name;
+
+	return {
+		...choice,
+
+		name,
+		value,
+		short: choice.short || name || value,
+		checked: checkedList.includes(index) || checkedList.includes(value),
+		disabled: await runAsync(choice.disabled, answers)
+	};
+}
+
+/**
+ * Derives the final properties of a propmt object.
+ *
  * @method resolvePrompt
  * @param {Object} prompt
  * @param {Object} answers
  * @return {Promise<Object>}
  */
 export async function resolvePrompt(prompt, answers) {
-	const message = await runAsync(prompt.message, answers);
-	const choices = await runAsync(prompt.choices, answers);
-
 	const answer = answers[prompt.name];
 	const defaultValue = await runAsync(prompt.default, answers);
-	const currentValue = answer || defaultValue;
+	const checkedList = [].concat(answer || defaultValue);
 
+	const choices = await runAsync(prompt.choices, answers);
 	const resolvedChoices = choices && await Promise.all(
-		choices.map((choice, index) =>
-			resolveChoice(choice, index, currentValue, answers)
-		)
+		choices
+			.map(normalizeChoice)
+			.map(choice => resolveChoice(
+				choice,
+				checkedList,
+				answers
+			))
 	);
 
 	return {
 		...prompt,
 
-		message,
 		answer,
 		default: defaultValue,
-		choices: resolvedChoices
+		choices: resolvedChoices,
+		message: await runAsync(prompt.message, answers)
 	};
 }
 
 /**
+ * Derives a list of propmts suitable for displaying to the user.
+ *
  * @method resolvePrompts
  * @param {Array<Object>} prompts
  * @param {Object} answers

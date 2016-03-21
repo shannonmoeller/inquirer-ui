@@ -26,21 +26,10 @@ export default registerElement('inquirer-form', HTMLElement, {
 	attachedCallback() {
 		this.create();
 
-		this.addEventListener('keyup', this.onKeyReleased, this);
-		this.addEventListener('click', this.onGenerateClicked, this);
-		this.addEventListener('click', this.onNextClicked, this);
-		this.addEventListener('click', this.onPrevClicked, this);
-	},
-
-	/**
-	 * @method detachedCallback
-	 * @callback
-	 */
-	detachedCallback() {
-		this.removeEventListener('keyup', this.onKeyReleased, this);
-		this.removeEventListener('click', this.onGenerateClicked, this);
-		this.removeEventListener('click', this.onNextClicked, this);
-		this.removeEventListener('click', this.onPrevClicked, this);
+		this.addEventListener('keyup', this.onKeyReleased);
+		this.addEventListener('click', this.onGenerateClicked);
+		this.addEventListener('click', this.onNextClicked);
+		this.addEventListener('click', this.onPrevClicked);
 	},
 
 	/**
@@ -85,8 +74,6 @@ export default registerElement('inquirer-form', HTMLElement, {
 		const { prompts, step } = present;
 		const answers = getValues(this);
 		const resolvedPrompts = await resolvePrompts(prompts, answers, step);
-
-		console.log('render', resolvedPrompts);
 
 		setInnerHTML(this, renderForm({
 			...present,
