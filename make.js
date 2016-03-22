@@ -34,7 +34,7 @@ import factorBundle from 'factor-bundle';
 import Svgo from 'svgo';
 import svgstore from 'svgstore';
 
-import { debounce } from './src/assets/scripts/util/function';
+import { debounce, timer } from './src/assets/scripts/util/function';
 import { find } from './src/assets/scripts/util/fs';
 
 /**
@@ -219,7 +219,7 @@ async function statics() {
  * Rebuilds everything from scratch.
  */
 async function build() {
-	console.time(chalk.green('Build complete'));
+	const clock = timer(chalk.green(`build`));
 
 	await clean();
 
@@ -231,7 +231,7 @@ async function build() {
 		statics()
 	]);
 
-	console.timeEnd(chalk.green('Build complete'));
+	clock();
 }
 
 /**
@@ -248,19 +248,17 @@ async function dev() {
 	};
 
 	const watchOptions = {
-		awaitWriteFinish: true,
 		ignored: /[\/\\]\./,
 		ignoreInitial: true
 	};
 
 	async function run(fn) {
-		console.time(chalk.green(fn.name));
+		const clock = timer(chalk.green(`${fn.name}`));
 
 		await fn()
+			.then(clock)
 			.then(browser.reload)
 			.catch(ygor.error);
-
-		console.timeEnd(chalk.green(fn.name));
 	}
 
 	async function watch(pattern, fn) {
@@ -272,7 +270,7 @@ async function dev() {
 	}
 
 	async function init() {
-		await run(build);
+		await build();
 
 		watch('src/**/*.{hbs,html}', markup);
 		watch('src/**/*.css', styles);

@@ -2,6 +2,8 @@
  * # Undoable State Store
  */
 
+import { createStore } from './store';
+
 /**
  * @method createUndoStore
  * @param {*} state
@@ -36,7 +38,7 @@ export function createUndoStore(state, actions) {
 		};
 	}
 
-	function makeAction(name) {
+	function makeUndoableAction(name) {
 		const action = actions[name];
 
 		if (typeof action !== 'function') {
@@ -54,7 +56,7 @@ export function createUndoStore(state, actions) {
 		};
 	}
 
-	Object.keys(actions).forEach(makeAction);
+	Object.keys(actions).forEach(makeUndoableAction);
 
 	Object.assign(undoableActions, {
 		undo,

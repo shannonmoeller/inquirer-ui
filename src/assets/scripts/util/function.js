@@ -54,3 +54,15 @@ export function runAsync(func, ...args) {
 		}
 	});
 }
+
+/**
+ * @method timer
+ * @param {String} name
+ * @return {Function}
+ */
+export function timer(name) {
+	console.log(name + '...');
+	console.time(name);
+
+	return () => console.timeEnd(name);
+}

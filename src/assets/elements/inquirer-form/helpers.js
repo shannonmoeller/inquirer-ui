@@ -39,7 +39,7 @@ export function normalizeChoice(choice, index) {
 export async function resolveChoice(choice, checkedList, answers) {
 	const { index } = choice;
 	const name = choice.name || choice.value;
-	const value = choice.value != null ? choice.value : choice.name;
+	const value = choice.value == null ? choice.name : choice.value;
 
 	return {
 		...choice,

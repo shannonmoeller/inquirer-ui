@@ -7,8 +7,8 @@
  */
 
 import 'babel-polyfill';
-import 'dom-shims';
 import 'document-register-element';
+import 'dom-shims';
 import 'whatwg-fetch';
 import svg4everybody from 'svg4everybody';
 
