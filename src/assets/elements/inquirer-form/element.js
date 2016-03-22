@@ -8,7 +8,7 @@
  */
 
 import { getTarget, getValues, registerElement, setInnerHTML } from '../../scripts/util/dom';
-import { createUndoStore } from '../../scripts/lib/store';
+import { createUndoStore } from '../../scripts/lib/undoStore';
 import { resolvePrompts } from './helpers';
 import * as formActions from './actions';
 import * as formService from './service';
