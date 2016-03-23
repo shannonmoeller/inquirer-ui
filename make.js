@@ -29,7 +29,6 @@ import browserify from 'browserify-incremental';
 import babelify from 'babelify';
 import errorify from 'errorify';
 import exorcist from 'exorcist';
-import factorBundle from 'factor-bundle';
 
 import Svgo from 'svgo';
 import svgstore from 'svgstore';
@@ -122,47 +121,38 @@ async function styles() {
  * # Scripts
  *
  *     foo.js ━┓
- *     bar.js ━┫
  *             ┗━ browserify-incremental
  *                ┗━ babelify
- *                   ┗━ factor-bundle
- *                      ┗━ exorcist ━┓
- *                                   ┣━ common.js
- *                                   ┣━ common.js.map
- *                                   ┣━ foo.js
- *                                   ┣━ foo.js.map
- *                                   ┣━ bar.js
- *                                   ┗━ bar.js.map
+ *                   ┗━ exorcist ━┓
+ *                                ┣━ foo.js
+ *                                ┗━ foo.js.map
  */
 async function scripts() {
-	const cacheFile = '.cache/browserify.json';
 	const { srcFiles, destFiles } = await find('src/assets/scripts/*.js');
-
-	const destCommon = 'dist/assets/scripts/common.js';
-	const mapCommon = destCommon + '.map';
-	const relCommon = path.relative(path.dirname(destCommon), __dirname);
+	const cacheFile = '.cache/browserify.json';
+	const destRoot = path.relative('dist/assets/scripts', '.');
 
 	await ensureFile(cacheFile);
-	await Promise.all(destFiles.map(dest => ensureFile(dest)));
 
-	await new Promise((resolve, reject) => {
-		browserify({ cacheFile, debug: true })
-			.add(srcFiles)
-			.transform(babelify, { presets: ['es2015', 'stage-2'] })
-			.plugin(errorify)
-			.plugin(factorBundle, { outputs: destFiles })
-			.on('factor.pipeline', (file, pipeline) => {
-				const mapFile = file.replace('src', 'dest') + '.map';
-				const relFile = path.relative(path.dirname(file), __dirname);
+	await Promise.all(
+		srcFiles.map(async (src, i) => {
+			const dest = destFiles[i];
 
-				pipeline.get('wrap').push(exorcist(mapFile, null, relFile));
-			})
-			.bundle()
-			.pipe(exorcist(mapCommon, null, relCommon))
-			.pipe(createWriteStream(destCommon))
-			.on('finish', () => setTimeout(resolve, 0))
-			.on('error', reject);
-	});
+			await ensureFile(dest);
+
+			return new Promise((resolve, reject) => {
+				browserify({ cacheFile, debug: true })
+					.add(src)
+					.plugin(errorify)
+					.transform(babelify, { presets: ['es2015', 'stage-2'] })
+					.bundle()
+					.pipe(exorcist(dest + '.map', null, destRoot))
+					.pipe(createWriteStream(dest))
+					.on('finish', resolve)
+					.on('error', reject);
+			});
+		})
+	);
 }
 
 /**
@@ -271,6 +261,8 @@ async function dev() {
 
 	async function init() {
 		await build();
+
+		browser.reload();
 
 		watch('src/**/*.{hbs,html}', markup);
 		watch('src/**/*.css', styles);

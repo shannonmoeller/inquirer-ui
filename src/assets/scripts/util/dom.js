@@ -2,60 +2,8 @@
  * # DOM Utilities
  */
 
+import formSerialize from 'form-serialize';
 import morphdom from 'morphdom';
-
-const reduce = Array.prototype.reduce;
-
-/**
- * Adds an input key-value pair to a data object, if enabled.
- *
- * @example
- *     <input type="text" name="string" value="string" />
- *     <input type="password" name="string" value="string" />
- *     <input type="checkbox" name="array[]" checked />
- *     <input type="checkbox" name="array[]" value="string" />
- *     <input type="radio" name="string" value="string" />
- *
- * @type {Function}
- * @param {Object} data
- * @param {HTMLElement} element
- * @return {Object}
- */
-function parseInput(data, input) {
-	if (input.disabled) {
-		return data;
-	}
-
-	let name = input.name;
-	const value = input.value;
-	const checked = input.checked;
-
-	switch (input.type) {
-		case 'checkbox':
-			name = name.slice(0, -2);
-			data[name] = data[name] || [];
-
-			if (checked) {
-				data[name].push(value || checked);
-			}
-
-			break;
-
-		case 'radio':
-			if (checked) {
-				data[name] = value;
-			}
-
-			break;
-
-		default:
-			data[name] = value || null;
-
-			break;
-	}
-
-	return data;
-}
 
 /**
  * Determines an event target based on a CSS selector.
@@ -77,18 +25,17 @@ export function getTarget(element, event, selector) {
 }
 
 /**
- * A naive input serializer.
- *
  * @method getValues
  * @param {HTMLElement} element
  * @return {Object}
  */
 export function getValues(element) {
-	return reduce.call(
-		element.getElementsByTagName('input'),
-		parseInput,
-		{}
-	);
+	const elements = element.querySelectorAll('input, keygen, select, textarea');
+
+	return formSerialize({ elements }, {
+		disabled: true,
+		hash: true
+	});
 }
 
 /**
@@ -110,7 +57,7 @@ export function registerElement(tagName, parent, child) {
 }
 
 /**
- * Set the innerHTML of an element with DOM patching.
+ * Set the innerHTML of an element with live DOM patching.
  *
  * @method setInnerHTML
  * @param {HTMLElement} fromElement

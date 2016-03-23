@@ -10,8 +10,10 @@ import 'babel-polyfill';
 import 'document-register-element';
 import 'dom-shims';
 import 'whatwg-fetch';
+import keyboardeventKey from 'keyboardevent-key-polyfill';
 import svg4everybody from 'svg4everybody';
 
+keyboardeventKey.polyfill();
 svg4everybody();
 
 /**
@@ -21,7 +23,7 @@ svg4everybody();
 document.documentElement.classList.remove('no-js');
 
 /**
- * ## Elements
+ * ## Custom Elements
  */
 import '../elements/inquirer-form/element';
 import '../elements/inquirer-input/element';

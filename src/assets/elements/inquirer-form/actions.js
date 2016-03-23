@@ -29,6 +29,7 @@ export function fetchSuccess(state, { prompts }) {
 
 		isLoading: false,
 		prompts: prompts,
+		error: null,
 		step: 1
 	};
 }
@@ -45,7 +46,9 @@ export function fetchError(state, { error }) {
 		...state,
 
 		isLoading: false,
-		error: error
+		prompts: [],
+		error: error,
+		step: 0
 	};
 }
 

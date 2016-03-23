@@ -7,12 +7,26 @@
  *     </inquirer-form>
  */
 
-import { getTarget, getValues, registerElement, setInnerHTML } from '../../scripts/util/dom';
+import {
+	getTarget,
+	getValues,
+	registerElement,
+	setInnerHTML
+} from '../../scripts/util/dom';
+
 import { createUndoStore } from '../../scripts/lib/undoStore';
 import { resolvePrompts } from './helpers';
 import * as formActions from './actions';
 import * as formService from './service';
 import renderForm from './templates/form.html';
+
+// const ATTRIBUTE_ACTION = 'action';
+const ATTRIBUTE_SOURCE = 'src';
+
+const SELECTOR_FOCUSABLE = 'inquirer-input,inquirer-list';
+const SELECTOR_INPUT = 'input:not([disabled]):not([hidden])';
+const SELECTOR_NEXT = '[inquirer-next]';
+const SELECTOR_PREV = '[inquirer-prev]';
 
 /**
  * @class InquirerFormElement
@@ -26,10 +40,10 @@ export default registerElement('inquirer-form', HTMLElement, {
 	attachedCallback() {
 		this.create();
 
-		this.addEventListener('keyup', this.onKeyReleased);
-		this.addEventListener('click', this.onGenerateClicked);
+		this.addEventListener('change', this.onChanged);
 		this.addEventListener('click', this.onNextClicked);
 		this.addEventListener('click', this.onPrevClicked);
+		this.addEventListener('keydown', this.onKeyPressed);
 	},
 
 	/**
@@ -47,10 +61,10 @@ export default registerElement('inquirer-form', HTMLElement, {
 
 	/**
 	 * @method create
-	 * @callback
+	 * @chainable
 	 */
 	create() {
-		const url = this.getAttribute('src');
+		const url = this.getAttribute(ATTRIBUTE_SOURCE);
 		const store = createUndoStore(formActions.init(), formActions);
 
 		store.addListener(() => this.render());
@@ -62,7 +76,10 @@ export default registerElement('inquirer-form', HTMLElement, {
 				error => store.fetchError({ error })
 			);
 
+		this.hasChanged = false;
 		this.store = store;
+
+		return this;
 	},
 
 	/**
@@ -71,42 +88,102 @@ export default registerElement('inquirer-form', HTMLElement, {
 	 */
 	async render() {
 		const { past, present } = this.store.getState();
-		const { prompts, step } = present;
-		const answers = getValues(this);
-		const resolvedPrompts = await resolvePrompts(prompts, answers, step);
+		const { prompts, answers, step } = present;
+
+		const localAnswers = {
+			...getValues(this),
+			...answers
+		};
 
 		setInnerHTML(this, renderForm({
 			...present,
 
-			prompts: resolvedPrompts,
+			prompts: await resolvePrompts(prompts, localAnswers, step),
 			hasPrevious: past.length > 1,
 			hasNext: true
 		}));
+
+		this.hasChanged = false;
+		this.setFocus();
 	},
 
 	/**
-	 * @method onKeyReleased
-	 * @param {Event} event
-	 * @callback
+	 * @method setFocus
+	 * @chainable
 	 */
-	onKeyReleased(event) {
-		console.log(event);
+	setFocus() {
+		const focusableElements = this.querySelectorAll(SELECTOR_FOCUSABLE);
+
+		// focus latest prompt
+		focusableElements[focusableElements.length - 1].setFocus();
+
+		return this;
 	},
 
 	/**
-	 * @method onGenerateClicked
+	 * @method next
+	 * @chainable
+	 */
+	next() {
+		const store = this.store;
+		const { future } = store.getState();
+
+		if (!this.hasChanged && future.length > 0) {
+			store.redo();
+
+			return this;
+		}
+
+		this.store.next({
+			answers: getValues(this)
+		});
+
+		return this;
+	},
+
+	/**
+	 * @method prev
+	 * @chainable
+	 */
+	prev() {
+		const store = this.store;
+		const { past } = store.getState();
+
+		if (past.length > 1) {
+			store.undo({
+				answers: getValues(this)
+			});
+		}
+
+		return this;
+	},
+
+	/**
+	 * @method onChange
+	 * @callback
+	 */
+	onChanged() {
+		this.hasChanged = true;
+	},
+
+	/**
+	 * @method onKeyPressed
 	 * @param {Event} event
 	 * @callback
 	 */
-	onGenerateClicked(event) {
-		if (!getTarget(this, event, '[inquirer-generate]')) {
+	onKeyPressed(event) {
+		if (!getTarget(this, event, SELECTOR_INPUT) || event.key !== 'Enter') {
 			return;
 		}
 
-		const url = this.getAttribute('action');
-		const { answers } = this.store.getState();
+		event.preventDefault();
 
-		formService.getZip(url, answers);
+		if (event.shiftKey) {
+			this.prev();
+		}
+		else {
+			this.next();
+		}
 	},
 
 	/**
@@ -115,12 +192,11 @@ export default registerElement('inquirer-form', HTMLElement, {
 	 * @callback
 	 */
 	onNextClicked(event) {
-		if (!getTarget(this, event, '[inquirer-next]')) {
+		if (!getTarget(this, event, SELECTOR_NEXT)) {
 			return;
 		}
 
-		this.store
-			.next({ answers: getValues(this) });
+		this.next();
 	},
 
 	/**
@@ -129,11 +205,10 @@ export default registerElement('inquirer-form', HTMLElement, {
 	 * @callback
 	 */
 	onPrevClicked(event) {
-		if (!getTarget(this, event, '[inquirer-prev]')) {
+		if (!getTarget(this, event, SELECTOR_PREV)) {
 			return;
 		}
 
-		this.store
-			.undo();
+		this.prev();
 	}
 });

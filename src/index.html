@@ -1,24 +1,22 @@
 ---
-title: Inquirer
+title: Inquirer UI
 ---
 {{#extend "layout"}}
 	{{#content "body"}}
 
-		<div class="grid">
-			<inquirer-form
-				class="grid-col_1of2 u-vr"
-				src="./prompts.html"
-				action="./generate.html">
-			</inquirer-form>
+		<inquirer-form
+			class="u-vr"
+			src="./prompts.html"
+			action="./generate.html">
+		</inquirer-form>
 
-			<!--
-			<inquirer-form
-				class="grid-col_1of2 u-vr"
-				src="http://boilerplate.dev/api/generators/nerdery-clientside/prompts?v=3.2.0"
-				action="http://boilerplate.dev/api/generators/nerdery-clientside/run?v=3.2.0">
-			</inquirer-form>
-			-->
-		</div>
+		<!--
+		<inquirer-form
+			class="u-vr"
+			src="http://boilerplate.dev/api/generators/nerdery-clientside/prompts?v=3.2.0"
+			action="http://boilerplate.dev/api/generators/nerdery-clientside/run?v=3.2.0">
+		</inquirer-form>
+		-->
 
 	{{/content}}
 {{/extend}}

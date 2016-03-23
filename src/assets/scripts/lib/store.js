@@ -46,25 +46,21 @@ export function createStore(state, actions) {
 
 		isDispatching = true;
 		state = action(state, data);
-		handlers.slice().forEach(h => h());
+		handlers.slice().forEach(handler => handler());
 		isDispatching = false;
+
+		return store;
 	}
 
-	function makeDispatcher(name) {
+	Object.keys(actions).forEach(name => {
 		const action = actions[name];
 
 		if (typeof action !== 'function') {
 			throw new Error('The action must be a function.');
 		}
 
-		store[name] = function (data) {
-			dispatch(action, data);
-
-			return store;
-		};
-	}
-
-	Object.keys(actions).forEach(makeDispatcher);
+		store[name] = data => dispatch(action, data);
+	});
 
 	Object.assign(store, {
 		getState,

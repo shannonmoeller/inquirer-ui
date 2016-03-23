@@ -18,45 +18,53 @@ export function createUndoStore(state, actions) {
 		future: []
 	};
 
-	function undo(state) {
+	function undo(state, data) {
 		const { past, present, future } = state;
+
+		if (past.length === 0) {
+			return state;
+		}
 
 		return {
 			present: past[past.length - 1],
 			past: past.slice(0, -1),
-			future: [present, ...future]
+			future: [{ ...present, ...data }, ...future]
 		};
 	}
 
-	function redo(state) {
+	function redo(state, data) {
 		const { past, present, future } = state;
+
+		if (future.length === 0) {
+			return state;
+		}
 
 		return {
 			present: future[0],
-			past: [...past, present],
+			past: [...past, { ...present, ...data }],
 			future: future.slice(1)
 		};
 	}
 
-	function makeUndoableAction(name) {
+	function act(action, state, data) {
+		const { past, present } = state;
+
+		return {
+			present: action(present, data),
+			past: [...past, present],
+			future: []
+		};
+	}
+
+	Object.keys(actions).forEach(name => {
 		const action = actions[name];
 
 		if (typeof action !== 'function') {
 			throw new Error('The action must be a function.');
 		}
 
-		undoableActions[name] = (state, data) => {
-			const { past, present } = state;
-
-			return {
-				present: action(present, data),
-				past: [...past, present],
-				future: []
-			};
-		};
-	}
-
-	Object.keys(actions).forEach(makeUndoableAction);
+		undoableActions[name] = (state, data) => act(action, state, data);
+	});
 
 	Object.assign(undoableActions, {
 		undo,
