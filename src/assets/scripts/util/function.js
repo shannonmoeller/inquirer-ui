@@ -19,8 +19,8 @@ export function debounce(fn, delay = 400) {
 }
 
 /**
- * Utility method to run a function that may or may not be async,
- * using Inquirer's `this.async()` style.
+ * Utility method to run a function that may or may not be async, using
+ * Inquirer's `this.async()` style.
  *
  *     function ajax() {
  *         var done = this.async();

@@ -27,6 +27,8 @@ export default registerElement('inquirer-list', HTMLElement, {
 	},
 
 	/**
+	 * Gives focus to the first input, preferring checked inputs, if any.
+	 *
 	 * @method setFocus
 	 * @chainable
 	 */
@@ -43,6 +45,10 @@ export default registerElement('inquirer-list', HTMLElement, {
 	},
 
 	/**
+	 * Shifts focus from the current element to another in a list based on an
+	 * offset. Wraps around the start and end of the list as needed. Has no
+	 * effect if there is only one element.
+	 *
 	 * @method shiftFocus
 	 * @param {Number} offset
 	 * @chainable

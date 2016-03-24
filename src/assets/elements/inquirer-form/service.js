@@ -4,7 +4,7 @@
 
 /**
  * Prompts are JSON plus functions so they are loaded as text and evaluated.
- * Only load prompts from trusted sources.
+ * Only use this to load prompts from trusted sources.
  *
  * @method getPrompts
  * @param {String} url

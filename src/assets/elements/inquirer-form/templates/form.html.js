@@ -24,7 +24,10 @@ export default data => html`
 	)}
 
 	${data.hasNext && html`
-		<button inquirer-next>Next <small>(or press <kbd>enter</kbd>)</small></button>
+		<button inquirer-next>
+			Next
+			<small>(or press <kbd>enter</kbd>)</small>
+		</button>
 	`}
 
 	${data.hasPrevious && html`

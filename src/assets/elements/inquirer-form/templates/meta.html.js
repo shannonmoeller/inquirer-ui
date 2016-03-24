@@ -9,7 +9,12 @@ export default data => html`
 		<small>
 			<ul>
 				${Object.keys(data.meta).map(key => html`
-					<li>${data.meta[key] === true ? 'Requires build step.' : data.meta[key]}</li>
+					<li>
+						${data.meta[key] === true
+							? 'Requires build step.'
+							: data.meta[key]
+						}
+					</li>
 				`)}
 			</ul>
 		</small>
