@@ -112,7 +112,7 @@ export default registerElement('inquirer-form', HTMLElement, {
 	 * @chainable
 	 */
 	setFocus() {
-		const focusableElements = this.querySelectorAll(SELECTOR_FOCUSABLE);
+		const focusableElements = this.queryAll(SELECTOR_FOCUSABLE);
 
 		// focus latest prompt
 		focusableElements[focusableElements.length - 1].setFocus();
@@ -130,13 +130,10 @@ export default registerElement('inquirer-form', HTMLElement, {
 
 		if (!this.hasChanged && future.length > 0) {
 			store.redo();
-
-			return this;
 		}
-
-		this.store.next({
-			answers: getValues(this)
-		});
+		else {
+			store.next({ answers: getValues(this) });
+		}
 
 		return this;
 	},
@@ -149,6 +146,7 @@ export default registerElement('inquirer-form', HTMLElement, {
 		const store = this.store;
 		const { past } = store.getState();
 
+		// don't undo to the initial loading state
 		if (past.length > 1) {
 			store.undo({
 				answers: getValues(this)
@@ -172,17 +170,19 @@ export default registerElement('inquirer-form', HTMLElement, {
 	 * @callback
 	 */
 	onKeyPressed(event) {
-		if (!getTarget(this, event, SELECTOR_INPUT) || event.key !== 'Enter') {
+		if (!getTarget(this, event, SELECTOR_INPUT)) {
 			return;
 		}
 
-		event.preventDefault();
+		if (event.key === 'Enter') {
+			event.preventDefault();
 
-		if (event.shiftKey) {
-			this.prev();
-		}
-		else {
-			this.next();
+			if (event.shiftKey) {
+				this.prev();
+			}
+			else {
+				this.next();
+			}
 		}
 	},
 

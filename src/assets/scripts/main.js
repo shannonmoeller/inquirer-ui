@@ -2,29 +2,29 @@
  * # Site-Wide Scripts
  */
 
-/**
- * ## Polyfills
- */
-
 import 'babel-polyfill';
 import 'document-register-element';
-import 'dom-shims';
+import 'dom4';
 import 'whatwg-fetch';
 import keyboardeventKey from 'keyboardevent-key-polyfill';
 import svg4everybody from 'svg4everybody';
 
-keyboardeventKey.polyfill();
-svg4everybody();
+import '../elements/inquirer-form/element';
+import '../elements/inquirer-input/element';
+import '../elements/inquirer-list/element';
 
 /**
  * ## Feature Detection
  */
 
-document.documentElement.classList.remove('no-js');
+const docEl = document.documentElement;
+
+docEl.classList.remove('no-js');
+docEl.classList.add('js');
 
 /**
- * ## Custom Elements
+ * ## Polyfills
  */
-import '../elements/inquirer-form/element';
-import '../elements/inquirer-input/element';
-import '../elements/inquirer-list/element';
+
+keyboardeventKey.polyfill();
+svg4everybody();

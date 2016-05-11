@@ -33,7 +33,7 @@ export default registerElement('inquirer-list', HTMLElement, {
 	 * @chainable
 	 */
 	setFocus() {
-		const inputs = Array.from(this.querySelectorAll(SELECTOR_INPUT));
+		const inputs = Array.from(this.queryAll(SELECTOR_INPUT));
 		const checked = inputs.filter(i => i.checked);
 		const target = checked[0] || inputs[0];
 
@@ -54,7 +54,7 @@ export default registerElement('inquirer-list', HTMLElement, {
 	 * @chainable
 	 */
 	shiftFocus(offset = 1) {
-		const inputs = Array.from(this.querySelectorAll(SELECTOR_INPUT));
+		const inputs = Array.from(this.queryAll(SELECTOR_INPUT));
 		const oldIndex = inputs.indexOf(document.activeElement);
 		const newIndex = (offset + oldIndex + inputs.length) % inputs.length;
 

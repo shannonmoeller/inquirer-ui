@@ -24,13 +24,13 @@
   "dependencies": {
     "babel-polyfill": "^6.7.2",
     "document-register-element": "^0.5.4",
-    "dom-shims": "^0.1.4",
-    "form-serialize": "0.7.1",
-    "keyboardevent-key-polyfill": "1.0.1",
+    "dom4": "^1.7.0",
+    "form-serialize": "^0.7.1",
+    "keyboardevent-key-polyfill": "^1.0.1",
     "morphdom": "^1.1.2",
     "reset-css": "^2.0.2011012603",
     "svg4everybody": "^2.0.3",
-    "whatwg-fetch": "0.11.0"
+    "whatwg-fetch": "^0.11.0"
   },
   "devDependencies": {
     "ava": "^0.13.0",
@@ -62,7 +62,7 @@
     "postcss-apply": "^0.2.0",
     "postcss-cssnext": "^2.5.1",
     "postcss-import": "^8.0.2",
-    "postcss-url": "5.1.1",
+    "postcss-url": "^5.1.1",
     "svgo": "^0.6.3",
     "svgstore": "^1.0.0",
     "xo": "^0.13.0",

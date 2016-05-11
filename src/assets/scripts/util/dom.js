@@ -32,7 +32,7 @@ export function getTarget(element, event, selector) {
  * @return {Object}
  */
 export function getValues(element) {
-	const elements = element.querySelectorAll(SELECTOR_FORM_FIELD);
+	const elements = element.queryAll(SELECTOR_FORM_FIELD);
 
 	return formSerialize({ elements }, {
 		disabled: true,
