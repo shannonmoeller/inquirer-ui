@@ -19,6 +19,4 @@ Standards for this project, including tests, code coverage, and semantics are en
 
 ----
 
-© Shannon Moeller <me@shannonmoeller.com> (http://shannonmoeller.com)
-
-Licensed under [MIT](http://shannonmoeller.com/mit.txt)
+MIT © [Shannon Moeller](http://shannonmoeller.com)
